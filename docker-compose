@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: mi_proyecto_db
+      MYSQL_USER: alumno_daw
+      MYSQL_PASSWORD: alumno_password
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+  adminer:
+    image: adminer
+    container_name: adminer-web
+    restart: always
+    ports:
+      - "8080:8080"
+  backend:
+    image: node:18-slim
+    container_name: node-backend
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: sh -c "npm install mysql2 && node app.js"
+    environment:
+      DB_HOST: db
+      DB_USER: alumno_daw
+      DB_PASSWORD: alumno_password
+      DB_NAME: mi_proyecto_db
+    depends_on:
+      - db
+
+volumes:
+  db_data:
